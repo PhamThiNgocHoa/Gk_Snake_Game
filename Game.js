@@ -178,16 +178,32 @@ class Game {
         this.paused = false;
         this.start();
     }
+
+//21130381 Nguyen Thanh Huy
+//Chuc nang Pause
+
+    pauseGame(){
+        document.getElementById("paus").addEventListener("click", () => {
+            game.pause();
+        });
+    }
+//5.5.2 Game xac nhan nut pause da duoc nhan
+    pause() {
+        this.paused = true;
+    }
+//5.5.3 chuyen trang thai game thanh pause nen man hinh game dung im
     
     pause() {
         this.paused = true;
     }
+
 
     checkClickContinue(){
         document.getElementById("continue").addEventListener("click", () => {
             game.resume();
         });
     }
+//sau do, nguoi choi co the nhan resume
 
     resume() {
         this.paused = false;
@@ -304,11 +320,6 @@ class Game {
 
     }
 
-    pauseGame(){
-        document.getElementById("paus").addEventListener("click", () => {
-            game.pause();
-        });
-    }
     drawFood() {
         this.ctx.beginPath();
         this.ctx.arc(this.food.foodObject.x + this.unitSize / 2, this.food.foodObject.y + this.unitSize / 2, this.unitSize / 2, 0, Math.PI * 2);
