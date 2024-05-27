@@ -192,12 +192,19 @@ class Game {
         this.paused = true;
     }
 //5.5.3 chuyen trang thai game thanh pause nen man hinh game dung im
+    
+    pause() {
+        this.paused = true;
+    }
+
+
     checkClickContinue(){
         document.getElementById("continue").addEventListener("click", () => {
             game.resume();
         });
     }
 //sau do, nguoi choi co the nhan resume
+
     resume() {
         this.paused = false;
         this.nextTick();
