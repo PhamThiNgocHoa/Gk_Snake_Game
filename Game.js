@@ -178,33 +178,29 @@ class Game {
         this.paused = false;
         this.start();
     }
-
-//5.5.0	Game Pause.
+    
     pause() {
         this.paused = true;
     }
 
-    //  5.5.2	Hệ thống xác nhận có đúng là nút Continue đã được Player nhấn vào hay chưa.
     checkClickContinue(){
         document.getElementById("continue").addEventListener("click", () => {
             game.resume();
         });
     }
-//5.5.3	Nếu Player đã nhấn vào nút Continue thì hệ thống chuyển trạng thái của Snake đang đứng yên sang trạng thái tiếp tục di chuyển trên màn hình.
+
     resume() {
         this.paused = false;
         this.nextTick();
     }
 
-    //5.5.4	Hệ thống tiếp tục thực thi các level tiếp theo sẽ diễn ra.
     nextTick() {
         if (!this.paused && this.running) {
             this.level();
         }
     }
-//5.5.4	Hệ thống tiếp tục thực thi các level tiếp theo sẽ diễn ra.
-    level() {
 
+    level() {
         if(this.score <=5){
             setTimeout(() => {
                 this.clearGameBoard();
@@ -263,12 +259,20 @@ class Game {
         });
     }
 
+    //Long
+    // hàm thay đổi hướng di chuyển của con rắn dựa trên phím bấm từ người chơi
+    // 5.5.2 Người chơi nhấn các nút Up, Down, Left, Right.
     changeDirection(direction) {
         var key = direction;
+    // 5.5.3 Hệ thống xác nhận trạng thái và xác định hướng con rắn sẽ đổi.
+        // kiểm tra xem con rắn có di chuyển lên xuống trái phải được không
         var goingUp = this.ySpeed === -this.unitSize;
         var goingDown = this.ySpeed === this.unitSize;
         var goingLeft = this.xSpeed === -this.unitSize;
         var goingRight = this.xSpeed === this.unitSize;
+    // 5.5.4 Nếu con rắn đang di chuyển theo hướng trước đó thì sẽ chuyển sang hướng tương ứng đã chọn.
+    // nếu người chơi nhấn nút trùng với hướng của con rắn đang move thì không có gì xảy ra
+	// nếu người chơi nhấn những nút còn lại thì con rắn sẽ đổi hướng theo nút đó
         if (key === "ArrowUp" && !goingDown) {
             this.xSpeed = 0;
             this.ySpeed = -this.unitSize;
@@ -286,7 +290,7 @@ class Game {
             this.ySpeed = 0;
         }
     }
-
+    // 5.5.5 Kết thúc.
 
 
     start() {
