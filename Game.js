@@ -153,7 +153,13 @@ class Barrier {
 
 
 class Game {
+//Huynh Ho Lam
+// Bắt đầu trò chơi - NewGame branch
+//-	New game là use case dùng để khởi động trò chơi dưới sự tương tác của người chơi.
+// Khi trò chơi hoạt động hệ thống sẽ luôn cho hiện ra một Pop Up cho phép người chơi
+// nhấn vào button New game ngay trong Pop Up để khởi tạo lại màn trò chơi tùy vaò nhu cầu người chơi
 
+//5.5.1 Khởi động trò chơi
     constructor() {
         this.gameBoard = document.getElementById("board");
         this.ctx = this.gameBoard.getContext("2d");
@@ -162,12 +168,44 @@ class Game {
         this.score = 0;
         this.running = true;
         this.ySpeed = 0;
-        this.snake = new Snake(this.unitSize); // Tạo đối tượng Snake trước
-        this.food = new Food(this.unitSize, this.gameBoard.width, this.gameBoard.height, this.snake); // Truyền đối tượng Snake vào Food
-        this.barrier = new Barrier(this.unitSize, this.gameBoard.width, this.gameBoard.height, this.snake, this.food);
+        this.snake = new Snake(this.unitSize); // Tạo đối tượng Snake
+        this.barrier = new Barrier(this.unitSize, this.gameBoard.width, this.gameBoard.height, this.snake); // Tạo đối tượng Barrier trước
+        this.food = new Food(this.unitSize, this.gameBoard.width, this.gameBoard.height, this.snake, this.barrier); // Truyền đối tượng Snake và Barrier vào Food
+        this.setupEventListeners();
+        this.setupEventNewGame();
         this.paused = false;
         this.start();
     }
+//5.5.2 Tiến hành hoạt động chơi game
+//5.5.3 Luôn hiện popup NewGame
+//5.5.4 Nhấn vào NewGame bất kì lúc nào
+    // Vì newgame cũng tương tự là resetgame, hệ thống sẽ làm mới lại các thống số như ban đầu....
+    resetGame() {
+        // Reset all game elements
+        this.snake = new Snake(this.unitSize); // Tạo đối tượng Snake mới
+        // Đặt lại các biến trạng thái khác
+        this.score = 0;// Đặt điểm về 0
+        this.running = true;// Đặt trạng thái chạy lại thành true
+        this.paused = false; // Đảm bảo rằng trạng thái tạm dừng được thiết lập lại
+        // Đặt lại hướng di chuyển của con rắn
+        this.xSpeed = this.unitSize;
+        this.ySpeed = 0;
+        // Xóa bảng trò chơi để vẽ lại từ đầu
+        this.clearGameBoard();
+        // Bắt đầu trò chơi mới
+        this.start();
+    }
+
+//5.5.5 Hệ thống khởi tạo trò chơi mọi lúc
+    setupEventNewGame() {
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("start").addEventListener("click", () => {
+                this.resetGame(); // Gọi resetGame khi nhấn vào button newGame
+            });
+
+        });
+    }
+//5.5.6 Kết thúc usecase
 
     start() {
         this.drawSnake();
@@ -280,31 +318,11 @@ class Game {
     }
 }
 
-//Huynh Ho Lam
-// Bắt đầu trò chơi - NewGame branch
-//-	New game là use case dùng để khởi động trò chơi dưới sự tương tác của người chơi.
-// Khi trò chơi hoạt động hệ thống sẽ luôn cho hiện ra một Pop Up cho phép người chơi
-// nhấn vào button New game ngay trong Pop Up để khởi tạo lại màn trò chơi tùy vaò nhu cầu người chơi
 
-//5.5.1 Khởi động trò chơi
 const game = new Game();
-//5.5.2 Tiến hành hoạt động chơi game
 $(document).ready(function (){
-    //5.5.3 Luôn hiện popup NewGame
-    //5.5.4 Nhấn vào NewGame bất kì lúc nào
     $("#start").click(function (){
-        //5.5.5 Hệ thống khởi tạo trò chơi mọi lúc
-        game.clearGameBoard(); // Gọi phương thức clearGameBoard của đối tượng game
-        game.snake = new Snake(game.unitSize); // Khởi tạo lại đối tượng Snake
-        game.barrier = new Barrier(game.unitSize, game.gameBoard.width, game.gameBoard.height, game.snake); // Khởi tạo lại đối tượng Barrier
-        game.food = new Food(game.unitSize, game.gameBoard.width, game.gameBoard.height, game.snake, game.barrier); // Khởi tạo lại đối tượng Food
-        game.score = 0; // Đặt điểm về 0
-        $("#score").text(game.score); // Cập nhật điểm trên giao diện
-        game.running = true; // Đặt trạng thái chạy lại thành true
-        game.start(); // Khởi động lại trò chơi
     });
-//5.5.6 Kết thúc usecase
-
 
     $("#intrusct").click(function () {
         $("#popup").css({  "opacity": "1", "pointer-events": "all"});
