@@ -65,15 +65,19 @@ class Snake {
     }
 }
 
+
 class Food {
     constructor(unitSize, gameBoardWidth, gameBoardHeight, snake, barrier) {
+
         this.unitSize = unitSize;
         this.gameBoardWidth = gameBoardWidth;
         this.gameBoardHeight = gameBoardHeight;
         this.foodObject = {};
         this.snake = snake; // Lưu đối tượng con rắn
+
         this.barrier = barrier; // Lưu đối tượng chướng ngại vật
     }
+
 
 
 
@@ -83,6 +87,7 @@ class Food {
             var x = Math.floor(Math.random() * ((this.gameBoardWidth - this.unitSize) / this.unitSize)) * this.unitSize;
             var y = Math.floor(Math.random() * ((this.gameBoardHeight - this.unitSize) / this.unitSize)) * this.unitSize;
             newFood = { x, y };
+
         } while (this.isFoodOnSnake(newFood, this.snake.snake) || this.isFoodOnBarrier(newFood, this.barrier.barriers)); // Check for collision with both snake and barriers
         this.foodObject = newFood;
     }
@@ -95,6 +100,7 @@ class Food {
         }
         return false;
     }
+
 
     isFoodOnSnake(food, snake) {
         for (var i = 0; i < snake.length; i++) {
@@ -109,16 +115,16 @@ class Food {
 }
 
 class Barrier {
-    constructor(unitSize, gameBoardWidth, gameBoardHeight, snake) {
+
+    constructor(unitSize, gameBoardWidth, gameBoardHeight, snake, food) {
         this.unitSize = unitSize;
         this.gameBoardWidth = gameBoardWidth;
         this.gameBoardHeight = gameBoardHeight;
         this.barriers = []; // Danh sách các chướng ngại vật
         this.snake = snake; // Truyền vào đối tượng snake
-        this.boom = [];
+        this.food = food; // Truyền vào đối tượng food
         this.createBarriers(); // Khởi tạo các chướng ngại vật ban đầu
     }
-
 
     createBarriers() {
         for (let i = 0; i < 15; i++) {
@@ -147,17 +153,6 @@ class Barrier {
             ctx.fillRect(this.barriers[i].x, this.barriers[i].y, this.unitSize, this.unitSize);
         }
     }
-
-    createBoom() {
-        for (let i = 0; i < 8; i++) {
-            let x, y;
-            do {
-                x = Math.floor(Math.random() * ((this.gameBoardWidth - this.unitSize) / this.unitSize)) * this.unitSize;
-                y = Math.floor(Math.random() * ((this.gameBoardHeight - this.unitSize) / this.unitSize)) * this.unitSize;
-            } while (this.isBarrierCollidedWithSnake({ x, y }));
-            this.boom.push({ x, y });
-        }
-    }
 }
 
 
@@ -172,21 +167,72 @@ class Game {
         this.running = true;
         this.ySpeed = 0;
         this.snake = new Snake(this.unitSize); // Tạo đối tượng Snake trước
-        this.barrier = new Barrier(this.unitSize, this.gameBoard.width, this.gameBoard.height, this.snake); // Tạo đối tượng Barrier trước
+        this.barrier = new Barrier(this.unitSize, this.gameBoard.width, this.gameBoard.height, this.snake, this.food);
         this.food = new Food(this.unitSize, this.gameBoard.width, this.gameBoard.height, this.snake, this.barrier); // Truyền đối tượng Snake và Barrier vào Food
         this.setupEventListeners();
         this.paused = false;
         this.start();
     }
 
+
+    start() {
+        this.drawSnake();
+        this.food.createFood();
+        this.drawFood();
+        this.checkClickContinue();
+        this.pauseGame();
+        this.nextTick();
+
+    }
+    drawFood() {
+        this.ctx.beginPath();
+        this.ctx.arc(this.food.foodObject.x + this.unitSize / 2, this.food.foodObject.y + this.unitSize / 2, this.unitSize / 2, 0, Math.PI * 2);
+        this.ctx.fillStyle = '#8e09ba';
+        this.ctx.fill();
+        this.ctx.closePath();
+    }
+    drawSnake() {
+        this.snake.draw(this.ctx);
+    }
+    moveSnake() {
+        this.snake.move(this.xSpeed, this.ySpeed);
+
+        // Kiểm tra xem con rắn có ăn thức ăn không
+        if (this.snake.snake[0].x === this.food.foodObject.x && this.snake.snake[0].y === this.food.foodObject.y) {
+            this.score++;
+            document.getElementById("score").innerText = this.score;
+            this.food.createFood();
+            this.snake.grow(); // Thêm phần đuôi của con rắn
+        }
+    }
+    checkCollision() {
+        this.snake.checkCollision(this.gameBoard.width, this.gameBoard.height);
+        if (this.snake.collided) {
+            this.running = false;
+            this.displayGameOver();
+        }
+    }
+
 //21130381 Nguyen Thanh Huy
 //Chuc nang Pause
+
 
     pauseGame(){
         document.getElementById("paus").addEventListener("click", () => {
             game.pause();
         });
     }
+
+
+//  21130359 - Phạm Thị Ngọc Hòa
+//5.5.0	Game Pause.
+    pause() {
+        this.paused = true;
+    }
+
+    //  5.5.2	Hệ thống xác nhận có đúng là nút Continue đã được Player nhấn vào hay chưa.
+    checkClickContinue() {
+
 //5.5.2 Game xac nhan nut pause da duoc nhan
     pause() {
         this.paused = true;
@@ -199,16 +245,22 @@ class Game {
 
 
     checkClickContinue(){
+
         document.getElementById("continue").addEventListener("click", () => {
             game.resume();
         });
     }
-//sau do, nguoi choi co the nhan resume
 
+
+//5.5.3	Nếu Player đã nhấn vào nút Continue thì hệ thống chuyển trạng thái của Snake đang đứng yên sang trạng thái tiếp tục di chuyển trên màn hình.
+//sau do, nguoi choi co the nhan resume
     resume() {
         this.paused = false;
         this.nextTick();
     }
+
+
+    //5.5.4	Hệ thống tiếp tục thực thi các level tiếp theo sẽ diễn ra.
 
     nextTick() {
         if (!this.paused && this.running) {
@@ -216,8 +268,15 @@ class Game {
         }
     }
 
+
+//5.5.4	Hệ thống tiếp tục thực thi các level tiếp theo sẽ diễn ra.
+    level() {
+
+        if (this.score <= 5) {
+
     level() {
         if(this.score <=5){
+
             setTimeout(() => {
                 this.clearGameBoard();
                 this.drawFood();
@@ -326,10 +385,12 @@ class Game {
         this.ctx.fillStyle = '#8e09ba';
         this.ctx.fill();
         this.ctx.closePath();
+
     }
     drawBarrier() {
         this.barrier.draw(this.ctx);
     }
+
     drawSnake() {
         this.snake.draw(this.ctx);
     }
@@ -418,6 +479,7 @@ class Game {
 
 
 
+
     displayGameOver() {
         this.ctx.font = "30px MV Boli";
         this.ctx.fillStyle = "Black";
@@ -430,6 +492,28 @@ class Game {
         this.ctx.fillRect(0, 0, this.gameBoard.width, this.gameBoard.height);
     }
 }
+
+
+//Huynh Ho Lam
+// Bắt đầu trò chơi - NewGame branch
+//-	New game là use case dùng để khởi động trò chơi dưới sự tương tác của người chơi.
+// Khi trò chơi hoạt động hệ thống sẽ luôn cho hiện ra một Pop Up cho phép người chơi
+// nhấn vào button New game ngay trong Pop Up để khởi tạo lại màn trò chơi tùy vaò nhu cầu người chơi
+
+//5.5.1 Khởi động trò chơi
+const game = new Game();
+//5.5.2 Tiến hành hoạt động chơi game
+$(document).ready(function (){
+    //5.5.3 Luôn hiện popup NewGame
+    //5.5.4 Nhấn vào NewGame bất kì lúc nào
+    $("#start").click(function (){
+        localStorage.setItem('start1Visible', 'true'); // Lưu trạng thái của người chơi #start1 vào localStorage
+        localStorage.setItem('selectVisible', 'false');
+        //5.5.5 hệ thống khởi tạo trò chơi mọi lúc bằng việc nhất button NewGame trên popup
+        location.reload();
+    });
+//5.5.6 Kết thúc usecase
+
 
 // Bắt đầu trò chơi
 const game = new Game();
@@ -456,6 +540,7 @@ $(document).ready(function (){
         location.reload();
     });
 
+
     $("#intrusct").click(function () {
         $("#popup").css({  "opacity": "1", "pointer-events": "all"});
     });
@@ -468,6 +553,18 @@ $(document).ready(function (){
         $("#popup").css({  "opacity": "0", "pointer-events": "none"});
     });
 });
+
+$(document).ready(function(){
+    $('#intrusct').click(function(){
+        $('#popup').css('display', 'block');
+    });
+
+    $('.fa-x').click(function(){
+        $('#popup').css('display', 'none');
+    });
+});
+
+
 
 
 
