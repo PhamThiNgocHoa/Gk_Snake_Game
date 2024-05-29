@@ -83,6 +83,7 @@ class Game {
 
     start() {
         this.drawSnake();
+        this.pauseGame();
         this.checkClickContinue();
         this.nextTick();
 
@@ -92,14 +93,6 @@ class Game {
     }
     moveSnake() {
         this.snake.move(this.xSpeed, this.ySpeed);
-
-        // // Kiểm tra xem con rắn có ăn thức ăn không
-        // if (this.snake.snake[0].x === this.food.foodObject.x && this.snake.snake[0].y === this.food.foodObject.y) {
-        //     this.score++;
-        //     document.getElementById("score").innerText = this.score;
-        //     this.food.createFood();
-        //     this.snake.grow(); // Thêm phần đuôi của con rắn
-        // }
     }
     checkCollision() {
         this.snake.checkCollision(this.gameBoard.width, this.gameBoard.height);
@@ -120,34 +113,46 @@ class Game {
         this.ctx.fillStyle = 'white';
         this.ctx.fillRect(0, 0, this.gameBoard.width, this.gameBoard.height);
     }
+    pauseGame(){
+        document.getElementById("paus").addEventListener("click", () => {
+            game.pause();
+        });
+    }
 
 //  21130359 - Phạm Thị Ngọc Hòa
-//5.5.0	Game Pause.
+//     chức năng Continue
+//6.5.0	Game Pause.
     pause() {
         this.paused = true;
     }
 
-    //  5.5.2	Hệ thống xác nhận có đúng là nút Continue đã được Player nhấn vào hay chưa.
+    //  6.5.2	Hệ thống xác nhận có đúng là nút
+    //  Continue đã được Player nhấn vào hay chưa.
     checkClickContinue() {
-        document.getElementById("continue").addEventListener("click", () => {
+        document.getElementById("continue")
+            .addEventListener("click", () => {
             game.resume();
         });
     }
 
-//5.5.3	Nếu Player đã nhấn vào nút Continue thì hệ thống chuyển trạng thái của Snake đang đứng yên sang trạng thái tiếp tục di chuyển trên màn hình.
+//6.5.3	Nếu Player đã nhấn vào nút Continue
+// thì hệ thống chuyển trạng thái của Snake đang
+// đứng yên sang trạng thái tiếp tục di chuyển trên màn hình.
     resume() {
         this.paused = false;
         this.nextTick();
     }
 
-    //5.5.4	Hệ thống tiếp tục thực thi các level tiếp theo sẽ diễn ra.
+    //6.5.4	Hệ thống tiếp tục thực thi các level
+    // tiếp theo sẽ diễn ra.
     nextTick() {
         if (!this.paused && this.running) {
             this.level();
         }
     }
 
-//5.5.4	Hệ thống tiếp tục thực thi các level tiếp theo sẽ diễn ra.
+//6.5.4	Hệ thống tiếp tục thực thi các
+// level tiếp theo sẽ diễn ra.
     level() {
 
         if (this.score <= 5) {
