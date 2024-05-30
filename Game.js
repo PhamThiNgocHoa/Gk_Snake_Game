@@ -177,7 +177,7 @@ class Game {
         this.start();
     }
 //5.5.2 Tiến hành hoạt động chơi game
-//5.5.3 Luôn hiện popup NewGame
+//5.5.3 Luôn hiện button NewGame
 //5.5.4 Nhấn vào NewGame bất kì lúc nào
     // Vì newgame cũng tương tự là resetgame, hệ thống sẽ làm mới lại các thống số như ban đầu....
     resetGame() {
